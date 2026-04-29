@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlacesToStay</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header>
+    <h1>PlacesToStay</h1>
+    <div id="auth-section">
+      <div id="login-form-container">
+        <form id="login-form">
+          <input type="text" id="username" placeholder="Username" required autocomplete="username">
+          <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+          <button type="submit">Login</button>
+        </form>
+      </div>
+      <div id="user-info" class="hidden">
+        <span id="logged-in-message"></span>
+        <button id="logout-btn">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="search-section">
+      <h2>Find Accommodation</h2>
+      <form id="search-form">
+        <input type="text" id="location-input" placeholder="Enter location (e.g. Southampton)" required>
+        <select id="type-input">
+          <option value="">Any Type</option>
+          <option value="hotel">Hotel</option>
+          <option value="bed and breakfast">Bed and Breakfast</option>
+          <option value="hostel">Hostel</option>
+        </select>
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section id="results-section" class="hidden">
+      <h2>Results</h2>
+      <div id="map"></div>
+      <div id="results-list"></div>
+    </section>
+
+    <div id="message-area"></div>
+  </main>
+
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h3>Book Accommodation</h3>
+      <p id="booking-acc-name"></p>
+      <form id="booking-form">
+        <input type="hidden" id="booking-acc-id">
+        <label for="booking-date">Date:</label>
+        <input type="date" id="booking-date" required>
+        <label for="booking-people">Number of people:</label>
+        <input type="number" id="booking-people" min="1" value="1" required>
+        <button type="submit">Book Now</button>
+      </form>
+      <div id="booking-message"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/js/main.js?v=2" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+node_modules/
+dist/
+places.db
+*.log
+.env
+.DS_Store
