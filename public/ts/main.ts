@@ -14,6 +14,7 @@ let markers: any[] = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   initAuth();
+  initMap();
   initSearch();
   initBookingModal();
 });
@@ -94,6 +95,25 @@ function updateAuthUI(username: string | null): void {
   }
 }
 
+/* ---------- Map ---------- */
+function initMap(): void {
+  map = L.map('map').setView([54.5, -3.5], 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  map.on('popupopen', () => {
+    document.querySelectorAll('.popup-book-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLButtonElement;
+        const id = parseInt(target.dataset.id!, 10);
+        const name = target.dataset.name!;
+        openBookingModal(id, name);
+      });
+    });
+  });
+}
+
 /* ---------- Search & Map ---------- */
 function initSearch(): void {
   const form = document.getElementById('search-form') as HTMLFormElement;
@@ -124,28 +144,16 @@ function initSearch(): void {
 }
 
 function displayResults(accommodations: Accommodation[]): void {
-  const resultsSection = document.getElementById('results-section') as HTMLElement;
   const resultsList = document.getElementById('results-list') as HTMLDivElement;
 
   if (accommodations.length === 0) {
     resultsList.innerHTML = '<p>No accommodation found for that location.</p>';
-    resultsSection.classList.remove('hidden');
-    if (map) {
-      clearMarkers();
-    }
+    clearMarkers();
     return;
   }
 
-  resultsSection.classList.remove('hidden');
   resultsList.innerHTML = '';
   clearMarkers();
-
-  if (!map) {
-    map = L.map('map').setView([51.5074, -0.1278], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-  }
 
   const group = L.featureGroup();
 
@@ -177,18 +185,6 @@ function displayResults(accommodations: Accommodation[]): void {
   });
 
   map.fitBounds(group.getBounds().pad(0.1));
-
-  // Attach listeners to popup buttons each time a popup opens
-  map.on('popupopen', () => {
-    document.querySelectorAll('.popup-book-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const target = e.target as HTMLButtonElement;
-        const id = parseInt(target.dataset.id!, 10);
-        const name = target.dataset.name!;
-        openBookingModal(id, name);
-      });
-    });
-  });
 }
 
 function clearMarkers(): void {

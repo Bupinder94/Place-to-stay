@@ -3,6 +3,7 @@ let map = null;
 let markers = [];
 document.addEventListener('DOMContentLoaded', () => {
     initAuth();
+    initMap();
     initSearch();
     initBookingModal();
 });
@@ -79,6 +80,23 @@ function updateAuthUI(username) {
         message.textContent = '';
     }
 }
+/* ---------- Map ---------- */
+function initMap() {
+    map = L.map('map').setView([54.5, -3.5], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    map.on('popupopen', () => {
+        document.querySelectorAll('.popup-book-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const target = e.target;
+                const id = parseInt(target.dataset.id, 10);
+                const name = target.dataset.name;
+                openBookingModal(id, name);
+            });
+        });
+    });
+}
 /* ---------- Search & Map ---------- */
 function initSearch() {
     const form = document.getElementById('search-form');
@@ -105,25 +123,14 @@ function initSearch() {
     });
 }
 function displayResults(accommodations) {
-    const resultsSection = document.getElementById('results-section');
     const resultsList = document.getElementById('results-list');
     if (accommodations.length === 0) {
         resultsList.innerHTML = '<p>No accommodation found for that location.</p>';
-        resultsSection.classList.remove('hidden');
-        if (map) {
-            clearMarkers();
-        }
+        clearMarkers();
         return;
     }
-    resultsSection.classList.remove('hidden');
     resultsList.innerHTML = '';
     clearMarkers();
-    if (!map) {
-        map = L.map('map').setView([51.5074, -0.1278], 5);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-    }
     const group = L.featureGroup();
     accommodations.forEach(acc => {
         const card = document.createElement('div');
@@ -150,17 +157,6 @@ function displayResults(accommodations) {
         });
     });
     map.fitBounds(group.getBounds().pad(0.1));
-    // Attach listeners to popup buttons each time a popup opens
-    map.on('popupopen', () => {
-        document.querySelectorAll('.popup-book-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const target = e.target;
-                const id = parseInt(target.dataset.id, 10);
-                const name = target.dataset.name;
-                openBookingModal(id, name);
-            });
-        });
-    });
 }
 function clearMarkers() {
     if (map) {
